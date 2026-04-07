@@ -16,8 +16,6 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        response.setContentType("application/json");
-
         try (Connection conn = DatabaseUtil.getConnection()) {
 
             String sql = "SELECT * FROM users WHERE username=? AND password=?";
@@ -29,15 +27,22 @@ public class LoginServlet extends HttpServlet {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+
+                // ✅ create session
                 SessionUtil.createSession(request, username);
-                response.getWriter().write("{\"success\":true}");
+
+                // ✅ redirect to home
+                response.sendRedirect("home.html");
+
             } else {
-                response.getWriter().write("{\"success\":false}");
+
+                // ❌ invalid login
+                response.sendRedirect("login.html?error=invalid");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.getWriter().write("{\"success\":false}");
+            response.sendRedirect("login.html?error=server");
         }
     }
 }
