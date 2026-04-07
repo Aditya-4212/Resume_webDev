@@ -567,7 +567,7 @@
 
     /* Error message */
     .error-msg {
-      display: none;
+      display: flex;
       background: rgba(244, 71, 71, 0.12);
       border: 1px solid var(--error);
       border-radius: 3px;
@@ -888,14 +888,16 @@
       gutter.appendChild(ln);
     });
 
+
     // ── Password toggle ──
     const passInput = document.getElementById('password');
     const toggleBtn = document.getElementById('toggle-pass');
     toggleBtn.addEventListener('click', () => {
-      const isPass = passInput.type === 'password';
-      passInput.type = isPass ? 'text' : 'password';
-      toggleBtn.classList.toggle('fa-eye', !isPass);
-      toggleBtn.classList.toggle('fa-eye-slash', isPass);
+      const isPassword = passInput.type === 'password';
+      passInput.type = isPassword ? 'text' : 'password';
+    
+      toggleBtn.classList.toggle('fa-eye');
+      toggleBtn.classList.toggle('fa-eye-slash');
     });
 
     // ── Form submit with loading state ──
@@ -904,12 +906,26 @@
     const errorMsg = document.getElementById('error-msg');
     const errorText = document.getElementById('error-text');
 
+    // Fix: Reset button state when page reloads (after error redirect)
+    window.addEventListener('pageshow', () => {
+      loginBtn.classList.remove('loading');
+      loginBtn.disabled = false;
+    });
+
     form.addEventListener('submit', (e) => {
       errorMsg.classList.add('hidden');
       loginBtn.classList.add('loading');
       loginBtn.disabled = true;
       // Form will POST to LoginServlet; re-enable on error via JSP/servlet error param
     });
+
+          // Fix: Close panel button
+      const closePanel = document.querySelector('.close-panel');
+      if (closePanel) {
+        closePanel.addEventListener('click', () => {
+          document.querySelector('.login-overlay').style.display = 'none';
+        });
+      }
 
     // ── Show error if servlet returned ?error=1 ──
     const params = new URLSearchParams(window.location.search);
