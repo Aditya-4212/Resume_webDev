@@ -15,12 +15,22 @@ public class AuthFilter implements Filter {
 
         String path = request.getRequestURI();
 
-        // Allow public resources
-        if (path.contains("login") || path.contains("css") || path.contains("js") || path.contains("images")) {
+        // ✅ Allow public resources
+        if (path.endsWith("login.html") ||
+            path.endsWith("index.html") ||
+            path.contains("/login") ||     // servlet
+            path.contains("/register") ||
+            path.contains("/css/") ||
+            path.contains("/js/") ||
+            path.contains("/images/") ||
+            path.contains("fonts") ||
+            path.contains("favicon")) {
+
             chain.doFilter(req, res);
             return;
         }
 
+        // ✅ Check session
         if (!SessionUtil.isLoggedIn(request)) {
             response.sendRedirect("login.html");
             return;
