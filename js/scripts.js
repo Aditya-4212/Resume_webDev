@@ -51,3 +51,21 @@
     const maxTop = minimap.clientHeight - 60;
     viewport.style.top = (8 + pct * maxTop) + 'px';
   });
+
+// LOGIN FORM HANDLING
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("login-form");
+  const loginBtn = document.getElementById("login-btn");
+
+  if (form) {
+    form.addEventListener("submit", () => {
+      loginBtn.classList.add("loading");
+      loginBtn.disabled = true;
+    });
+  }
+});
+
+// LOGOUT FUNCTION
+function logout() {
+  window.location.href = "LogoutServlet";
+}
