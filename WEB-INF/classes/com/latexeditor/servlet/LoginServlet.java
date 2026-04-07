@@ -18,11 +18,6 @@ public class LoginServlet extends HttpServlet {
 
         response.setContentType("application/json");
 
-        if (username == null || password == null) {
-            response.getWriter().write("{\"success\":false}");
-            return;
-        }
-
         try (Connection conn = DatabaseUtil.getConnection()) {
 
             String sql = "SELECT * FROM users WHERE username=? AND password=?";
