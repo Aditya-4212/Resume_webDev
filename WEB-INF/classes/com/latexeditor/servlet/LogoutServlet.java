@@ -11,6 +11,8 @@ public class LogoutServlet extends HttpServlet {
             throws ServletException, IOException {
 
         SessionUtil.destroySession(request);
-        response.sendRedirect("login.html");
+
+        // redirect with message
+        response.sendRedirect("login.html?error=session");
     }
 }
