@@ -79,5 +79,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // LOGOUT (outside DOMContentLoaded)
 function logout() {
-  window.location.href = "LogoutServlet";
+  window.location.href = "logout";
 }
