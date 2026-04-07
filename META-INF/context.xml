@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  context.xml  –  Tomcat context configuration for LaTeXEditor
+  ─────────────────────────────────────────────────────────────
+  • Gemini API key  →  set in <Parameter> or GEMINI_API_KEY env var
+  • MySQL pool      →  update url/username/password below
+  • Place mysql-connector-j-8.x.x.jar in WEB-INF/lib/
+-->
+<Context>
+
+    <!-- ── Gemini API Key ──────────────────────────────────────── -->
+    <Parameter name="GEMINI_API_KEY" value="" override="false"/>
+
+    <!-- ── MySQL Connection Pool ───────────────────────────────── -->
+    <Resource
+        name="jdbc/latexeditor"
+        auth="Container"
+        type="javax.sql.DataSource"
+        driverClassName="com.mysql.cj.jdbc.Driver"
+        url="jdbc:mysql://localhost:3306/latexeditor?useSSL=false&amp;serverTimezone=UTC&amp;characterEncoding=UTF-8"
+        username="root"
+        password="your_password"
+        maxTotal="20"
+        maxIdle="10"
+        minIdle="2"
+        maxWaitMillis="10000"
+        validationQuery="SELECT 1"
+        testOnBorrow="true"/>
+
+</Context>

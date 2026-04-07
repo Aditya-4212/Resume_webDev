@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                             https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+
+  <display-name>LaTeX Editor</display-name>
+  <description>Overleaf-like LaTeX Editor – Jakarta EE / Tomcat 10</description>
+
+  <!-- ── Servlet mappings ──────────────────────────────────────────── -->
+
+  <!-- Serves index.html at root -->
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>login.html</welcome-file>
+  </welcome-file-list>
+
+  <!-- Templates Servlet – replaces Express GET /templates -->
+  <servlet>
+    <servlet-name>TemplatesServlet</servlet-name>
+    <servlet-class>com.latexeditor.servlet.TemplatesServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TemplatesServlet</servlet-name>
+    <url-pattern>/templates</url-pattern>
+  </servlet-mapping>
+
+  <!-- Compile Servlet – replaces Express POST /compile -->
+  <servlet>
+    <servlet-name>CompileServlet</servlet-name>
+    <servlet-class>com.latexeditor.servlet.CompileServlet</servlet-class>
+    <init-param>
+      <param-name>pdflatexPath</param-name>
+      <param-value>/usr/bin/pdflatex</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CompileServlet</servlet-name>
+    <url-pattern>/compile</url-pattern>
+  </servlet-mapping>
+
+  <!-- AI Resume Servlet – replaces Express POST /ai-resume -->
+  <servlet>
+    <servlet-name>AiResumeServlet</servlet-name>
+    <servlet-class>com.latexeditor.servlet.AiResumeServlet</servlet-class>
+    <init-param>
+      <!-- Set your Gemini API key here or in context.xml -->
+      <param-name>geminiApiKey</param-name>
+      <param-value>${GEMINI_API_KEY}</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AiResumeServlet</servlet-name>
+    <url-pattern>/ai-resume</url-pattern>
+  </servlet-mapping>
+
+
+  <!-- XmlSource Servlet – serves raw templates.xml for home page viewer -->
+  <servlet>
+    <servlet-name>XmlSourceServlet</servlet-name>
+    <servlet-class>com.latexeditor.servlet.XmlSourceServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>XmlSourceServlet</servlet-name>
+    <url-pattern>/xml-source</url-pattern>
+  </servlet-mapping>
+
+  <!-- ── Global error page ─────────────────────────────────────────── -->
+  <error-page>
+    <error-code>500</error-code>
+    <location>/error.html</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error.html</location>
+  </error-page>
+
+  <!-- ── MySQL DataSource (JNDI) ──────────────────────────────────── -->
+  <resource-ref>
+    <res-ref-name>jdbc/latexeditor</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+
+</web-app>

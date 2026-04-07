@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+  <template id="basic" label="Basic Article">
+    <description>A clean article with sections, itemize, and standard formatting</description>
+    <content><![CDATA[\documentclass[12pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{setspace}
+
+\title{\textbf{Introduction to HTML, CSS, and JavaScript}}
+\author{Your Name}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\onehalfspacing
+
+\section{Introduction}
+Web development is the process of creating websites and web applications. The foundation of web development is built using three core technologies: HTML, CSS, and JavaScript. These technologies work together to create structured, styled, and interactive web pages.
+
+\section{HTML (HyperText Markup Language)}
+HTML is the standard markup language used to create the structure of web pages. It defines elements such as headings, paragraphs, images, links, and more.
+
+\subsection{Key Features of HTML}
+\begin{itemize}
+    \item Defines the structure of web content
+    \item Uses tags like \texttt{<html>}, \texttt{<head>}, \texttt{<body>}
+    \item Supports multimedia elements like images, videos, and audio
+\end{itemize}
+
+\section{CSS (Cascading Style Sheets)}
+CSS is used to style and design HTML elements. It controls layout, colors, fonts, spacing, and responsiveness.
+
+\section{JavaScript}
+JavaScript is a programming language used to add interactivity and dynamic behavior to web pages.
+
+\section{Conclusion}
+HTML, CSS, and JavaScript are essential for building modern websites.
+
+\end{document}]]></content>
+  </template>
+
+  <template id="report" label="Report">
+    <description>A formal report with chapters, table of contents, and title page</description>
+    <content><![CDATA[\documentclass[12pt,a4paper]{report}
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\definecolor{primary}{RGB}{0,102,204}
+
+\titleformat{\chapter}{\Huge\bfseries\color{primary}}{\thechapter}{1em}{}
+
+\begin{document}
+
+\begin{center}
+    \vspace*{2cm}
+    {\Huge \textbf{RAG-Based AI Chatbot}} \\[0.8cm]
+    {\Large Retrieval-Augmented Generation} \\[1cm]
+    {\Large \textbf{Project Report}} \\[2cm]
+    Devulapalli Abhiram \\
+    B.Sc Computer Science (AI) \\
+    Sri Sathya Sai Institute of Higher Learning \\
+    2026
+    \vfill
+    \today
+\end{center}
+
+\tableofcontents
+\newpage
+\onehalfspacing
+
+\chapter*{Abstract}
+This project implements a Retrieval-Augmented Generation (RAG) based intelligent chatbot.
+
+\chapter{Introduction}
+\chapter{System Architecture}
+\chapter{Methodology}
+\chapter{Conclusion}
+
+\end{document}]]></content>
+  </template>
+
+  <template id="math" label="Math Heavy">
+    <description>Math-focused document with ODE examples, theorems, and tcolorbox</description>
+    <content><![CDATA[\documentclass[12pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{tcolorbox}
+
+\title{\textbf{Ordinary Differential Equations (ODEs) - Explained}}
+\author{Devulapalli Abhiram}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+An \textbf{Ordinary Differential Equation (ODE)} is an equation involving a function of one independent variable and its derivatives.
+
+\section{Order and Degree}
+\begin{itemize}
+\item \textbf{Order}: Highest derivative present in the equation.
+\item \textbf{Degree}: Power of the highest order derivative.
+\end{itemize}
+
+\section{First Order ODEs}
+
+\begin{tcolorbox}[title=Separable Equations]
+\[
+\frac{dy}{dx} = f(x) \cdot g(y)
+\]
+\end{tcolorbox}
+
+\begin{tcolorbox}[title=Linear First Order]
+\[
+\frac{dy}{dx} + P(x)y = Q(x)
+\]
+Integrating Factor = $e^{\int P(x)\, dx}$
+\end{tcolorbox}
+
+\section{Applications}
+\begin{itemize}
+\item Population growth models
+\item Radioactive decay
+\item Simple harmonic motion
+\item Electrical circuits
+\item Heat transfer
+\end{itemize}
+
+\end{document}]]></content>
+  </template>
+
+  <template id="beamer" label="Beamer Slides">
+    <description>Beamer presentation with Madrid theme and multiple slides</description>
+    <content><![CDATA[\documentclass{beamer}
+\usetheme{Madrid}
+
+\title{My Presentation}
+\author{Your Name}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Slide 1 - Introduction}
+  \begin{itemize}
+    \item Welcome to the presentation
+    \item Topic overview
+    \item Main objectives
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Slide 2 - Content}
+  \begin{itemize}
+    \item Key Point One
+    \item Key Point Two
+    \item Key Point Three
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusion}
+  Thank You! \\
+  Any Questions?
+\end{frame}
+
+\end{document}]]></content>
+  </template>
+
+  <template id="cv" label="Simple CV">
+    <description>Clean one-page resume with skills, projects, and education sections</description>
+    <content><![CDATA[\documentclass[10pt,a4paper]{article}
+\usepackage[left=1.2cm,right=1.2cm,top=1.6cm,bottom=1.6cm]{geometry}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\pagenumbering{gobble}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titlespacing*{\section}{0pt}{6pt}{4pt}
+
+\setlist[itemize]{noitemsep, topsep=2pt, left=0.5cm}
+\setlength{\parskip}{2pt}
+\setlength{\parindent}{0pt}
+
+\newcommand{\entry}[2]{\textbf{#1} \hfill #2}
+
+\begin{document}
+
+\begin{center}
+{\LARGE \textbf{Devulapalli Abhiram}}\\[4pt]
+\href{mailto:abhiramdevulapalli8@gmail.com}{abhiramdevulapalli8@gmail.com} \;|\;
+\href{https://github.com/abhirammdh}{GitHub} \;|\;
+\href{https://www.linkedin.com/in/devulapalli-abhiram-2bb634249/}{LinkedIn}
+\end{center}
+
+\section*{Professional Summary}
+Computer Science undergraduate with strong \textbf{Python} and \textbf{Web Development} skills. Experienced in AI-based projects and full-stack development.
+
+\section*{Education}
+\entry{Sri Sathya Sai Institute of Higher Learning}{2023 -- 2026} \\
+B.Sc. Computer Science \hfill CGPA: 6.5
+
+\section*{Technical Skills}
+\begin{tabularx}{\textwidth}{l X}
+\textbf{Programming} & Python, C++, JavaScript \\
+\textbf{Web} & HTML, CSS, JavaScript, Bootstrap \\
+\textbf{Tools} & Git, VS Code, Flask \\
+\textbf{Other} & MySQL, API Integration
+\end{tabularx}
+
+\section*{Projects}
+\entry{PyImg2Ascii}{May 2025 -- Sep 2025}
+\begin{itemize}
+    \item Python library to convert images to ASCII art.
+\end{itemize}
+
+\entry{RAG-Based AI Chatbot}{Dec 2025 -- Mar 2026}
+\begin{itemize}
+    \item Built context-aware chatbot using FAISS.
+\end{itemize}
+
+\end{document}]]></content>
+  </template>
+
+</templates>

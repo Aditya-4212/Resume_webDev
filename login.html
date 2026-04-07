@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LaTeX Editor – Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --bg: #1e1e1e;
+      --sidebar: #252526;
+      --panel: #2d2d2d;
+      --input-bg: #3c3c3c;4
+      --border: #3c3c3c;
+      --border-focus: #007acc;
+      --text: #d4d4d4;
+      --text-dim: #858585;
+      --text-bright: #ffffff;
+      --accent: #007acc;
+      --accent-hover: #1a8fde;
+      --accent-glow: rgba(0, 122, 204, 0.25);
+      --title-bar: #323233;
+      --status-bar: #007acc;
+      --error: #f44747;
+      --success: #4ec9b0;
+      --keyword: #569cd6;
+      --string: #ce9178;
+      --comment: #6a9955;
+      --number: #b5cea8;
+      --type: #4ec9b0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Title Bar ── */
+    .title-bar {
+      height: 30px;
+      background: var(--title-bar);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 8px;
+      flex-shrink: 0;
+      -webkit-app-region: drag;
+    }
+
+    .win-btn {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .win-close   { background: #ff5f57; }
+    .win-min     { background: #febc2e; }
+    .win-max     { background: #28c840; }
+
+    .title-text {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Menu Bar ── */
+    .menu-bar {
+      height: 30px;
+      background: var(--sidebar);
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      gap: 2px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .menu-item {
+      padding: 4px 10px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 3px;
+      transition: background 0.1s;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .menu-item:hover { background: rgba(255,255,255,0.07); }
+
+    /* ── Main Layout ── */
+    .workspace {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ── Activity Bar ── */
+    .activity-bar {
+      width: 48px;
+      background: #333333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      gap: 4px;
+      border-right: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .act-icon {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 5px;
+      cursor: pointer;
+      color: var(--text-dim);
+      font-size: 18px;
+      transition: color 0.15s;
+      position: relative;
+    }
+    .act-icon:hover { color: var(--text); }
+    .act-icon.active {
+      color: var(--text-bright);
+      border-left: 2px solid var(--accent);
+    }
+
+    /* ── Sidebar / Explorer ── */
+    .sidebar {
+      width: 240px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 10px 16px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-family: 'Segoe UI', sans-serif;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .file-tree {
+      padding: 8px 0;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .tree-section {
+      margin-bottom: 4px;
+    }
+
+    .tree-section-header {
+      padding: 3px 8px 3px 16px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: 600;
+      transition: background 0.1s;
+    }
+    .tree-section-header:hover { background: rgba(255,255,255,0.05); }
+    .tree-section-header i { font-size: 11px; color: var(--text-dim); }
+
+    .tree-item {
+      padding: 3px 8px 3px 32px;
+      font-size: 13px;
+      color: var(--text-dim);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.1s, color 0.1s;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .tree-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .tree-item.active { background: #094771; color: var(--text-bright); }
+    .tree-item i { font-size: 14px; width: 14px; text-align: center; }
+    .tree-item .html-icon { color: #e44d26; }
+    .tree-item .js-icon   { color: #f7df1e; }
+    .tree-item .css-icon  { color: #563d7c; }
+    .tree-item .java-icon { color: #b07219; }
+    .tree-item .lock-icon { color: var(--accent); }
+
+    /* ── Editor Area ── */
+    .editor-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Tab bar */
+    .tab-bar {
+      height: 35px;
+      background: var(--sidebar);
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      font-size: 13px;
+      color: var(--text-dim);
+      cursor: pointer;
+      border-right: 1px solid var(--border);
+      white-space: nowrap;
+      background: var(--sidebar);
+      min-width: 120px;
+      font-family: 'Segoe UI', sans-serif;
+      transition: background 0.1s;
+    }
+    .tab:hover { background: rgba(255,255,255,0.05); }
+    .tab.active {
+      background: var(--bg);
+      color: var(--text);
+      border-top: 1px solid var(--accent);
+      border-bottom: 1px solid transparent;
+    }
+    .tab .close {
+      margin-left: auto;
+      width: 18px; height: 18px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 3px;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+    .tab .close:hover { background: rgba(255,255,255,0.1); opacity: 1; }
+
+    /* Editor content */
+    .editor-content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Line numbers */
+    .gutter {
+      width: 58px;
+      background: var(--bg);
+      color: #3f3f3f;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 24px 12px 0 0;
+      text-align: right;
+      flex-shrink: 0;
+      user-select: none;
+      border-right: 1px solid #2a2a2a;
+      font-family: Consolas, monospace;
+    }
+
+    .gutter span {
+      display: block;
+      color: #3f3f3f;
+      transition: color 0.1s;
+    }
+    .gutter span.active-line { color: #858585; }
+
+    /* Code display (decorative) */
+    .code-bg {
+      flex: 1;
+      padding: 24px 32px;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .code-line { display: block; white-space: nowrap; opacity: 0.35; }
+    .kw  { color: var(--keyword); }
+    .str { color: var(--string); }
+    .cm  { color: var(--comment); }
+    .nm  { color: var(--number); }
+    .ty  { color: var(--type); }
+    .pl  { color: #dcdcaa; }
+    .pn  { color: var(--text); }
+
+    /* ── Login Widget ── */
+    .login-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(2px);
+      z-index: 20;
+    }
+
+    .login-panel {
+      width: 420px;
+      background: #252526;
+      border: 1px solid #3c3c3c;
+      border-radius: 6px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.7);
+      overflow: hidden;
+      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-20px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+
+    .panel-titlebar {
+      height: 32px;
+      background: #3c3c3c;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .panel-titlebar i { color: var(--accent); font-size: 14px; }
+    .panel-titlebar span {
+      font-size: 13px;
+      color: var(--text);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .panel-titlebar .close-panel {
+      margin-left: auto;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 13px;
+      width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 3px;
+    }
+    .panel-titlebar .close-panel:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+    .panel-body {
+      padding: 28px 32px 32px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .breadcrumb i { font-size: 10px; }
+    .breadcrumb .crumb { color: var(--text-dim); }
+    .breadcrumb .crumb.active { color: var(--accent); }
+
+    .login-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 6px;
+      font-family: 'Segoe UI', sans-serif;
+      letter-spacing: 0.2px;
+    }
+
+    .login-subtitle {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Form */
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      font-family: 'Segoe UI', sans-serif;
+      letter-spacing: 0.3px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap i {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 13px;
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+
+    .field input {
+      width: 100%;
+      height: 34px;
+      background: var(--input-bg);
+      border: 1px solid #555;
+      border-radius: 3px;
+      color: var(--text);
+      font-size: 13px;
+      padding: 0 10px 0 34px;
+      outline: none;
+      font-family: Consolas, monospace;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .field input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 1px var(--border-focus);
+    }
+
+    .field input:focus + i,
+    .input-wrap:focus-within i {
+      color: var(--accent);
+    }
+
+    .input-wrap i { /* icon before input needs z-index fix */
+      z-index: 1;
+    }
+
+    /* Password toggle */
+    .toggle-pass {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 13px;
+      transition: color 0.15s;
+      z-index: 2;
+    }
+    .toggle-pass:hover { color: var(--text); }
+
+    /* Options row */
+    .options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .remember-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+
+    .remember-wrap input[type="checkbox"] {
+      width: 14px; height: 14px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .remember-wrap span {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .forgot-link {
+      font-size: 12px;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: none;
+      font-family: 'Segoe UI', sans-serif;
+      transition: color 0.15s;
+    }
+    .forgot-link:hover { color: var(--accent-hover); text-decoration: underline; }
+
+    /* Submit button */
+    .btn-login {
+      width: 100%;
+      height: 34px;
+      background: var(--accent);
+      border: none;
+      border-radius: 3px;
+      color: #fff;
+      font-size: 13px;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, box-shadow 0.15s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-login:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .btn-login:active { transform: scale(0.99); }
+
+    .btn-login .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn-login.loading .btn-text { display: none; }
+    .btn-login.loading .spinner  { display: block; }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 18px 0;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Register link */
+    .register-row {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .register-row a {
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .register-row a:hover { text-decoration: underline; }
+
+    /* Error message */
+    .error-msg {
+      display: none;
+      background: rgba(244, 71, 71, 0.12);
+      border: 1px solid var(--error);
+      border-radius: 3px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--error);
+      margin-bottom: 16px;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .error-msg.hidden { display: none !important; }
+
+    /* Status bar */
+    .status-bar {
+      height: 22px;
+      background: var(--status-bar);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 16px;
+      font-size: 12px;
+      font-family: 'Segoe UI', sans-serif;
+      color: rgba(255,255,255,0.9);
+      flex-shrink: 0;
+    }
+
+    .status-bar .status-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      opacity: 0.85;
+      cursor: pointer;
+      padding: 0 4px;
+      border-radius: 2px;
+      transition: opacity 0.1s, background 0.1s;
+    }
+    .status-bar .status-item:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+    .status-bar .status-right {
+      margin-left: auto;
+      display: flex;
+      gap: 12px;
+    }
+
+    /* Decorative code animation */
+    .code-line { animation: fadeLine 0.5s ease both; }
+    @keyframes fadeLine {
+      from { opacity: 0; transform: translateX(-4px); }
+      to   { opacity: 0.35; }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .activity-bar { display: none; }
+      .gutter { display: none; }
+      .login-panel { width: 92vw; }
+      .panel-body { padding: 20px 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Title Bar -->
+  <div class="title-bar">
+    <div class="win-btn win-close"></div>
+    <div class="win-btn win-min"></div>
+    <div class="win-btn win-max"></div>
+    <span class="title-text">LaTeX Editor – SSSIHL &nbsp;—&nbsp; login.html</span>
+  </div>
+
+  <!-- Menu Bar -->
+  <div class="menu-bar">
+    <span class="menu-item">File</span>
+    <span class="menu-item">Edit</span>
+    <span class="menu-item">View</span>
+    <span class="menu-item">Go</span>
+    <span class="menu-item">Run</span>
+    <span class="menu-item">Terminal</span>
+    <span class="menu-item">Help</span>
+  </div>
+
+  <!-- Workspace -->
+  <div class="workspace">
+
+    <!-- Activity Bar -->
+    <div class="activity-bar">
+      <div class="act-icon active" title="Explorer"><i class="fas fa-copy"></i></div>
+      <div class="act-icon" title="Search"><i class="fas fa-search"></i></div>
+      <div class="act-icon" title="Source Control"><i class="fas fa-code-branch"></i></div>
+      <div class="act-icon" title="Extensions"><i class="fas fa-puzzle-piece"></i></div>
+      <div class="act-icon" style="margin-top:auto;" title="Settings"><i class="fas fa-cog"></i></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">Explorer</div>
+      <div class="file-tree">
+        <div class="tree-section">
+          <div class="tree-section-header">
+            <i class="fas fa-chevron-down"></i> SSSIHL-LATEX-EDITOR
+          </div>
+          <div class="tree-item active">
+            <i class="fas fa-lock lock-icon"></i> login.html
+          </div>
+          <div class="tree-item">
+            <i class="fas fa-home html-icon"></i> home.html
+          </div>
+          <div class="tree-item">
+            <i class="fas fa-file-code html-icon"></i> index.html
+          </div>
+          <div class="tree-item">
+            <i class="fas fa-paint-brush css-icon"></i> styles.css
+          </div>
+          <div class="tree-item">
+            <i class="fab fa-js js-icon"></i> scripts.js
+          </div>
+          <div class="tree-item">
+            <i class="fab fa-java java-icon"></i> LoginServlet.java
+          </div>
+          <div class="tree-item">
+            <i class="fab fa-java java-icon"></i> UserDAO.java
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Editor Area -->
+    <div class="editor-area">
+
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <div class="tab active">
+          <i class="fas fa-lock" style="color:var(--accent); font-size:12px;"></i>
+          login.html
+          <span class="close"><i class="fas fa-times"></i></span>
+        </div>
+        <div class="tab">
+          <i class="fas fa-home" style="color:#e44d26; font-size:12px;"></i>
+          home.html
+          <span class="close"><i class="fas fa-times"></i></span>
+        </div>
+      </div>
+
+      <!-- Editor Content -->
+      <div class="editor-content">
+
+        <!-- Gutter -->
+        <div class="gutter" id="gutter"></div>
+
+        <!-- Decorative code background -->
+        <div class="code-bg" id="code-bg"></div>
+
+        <!-- Login Overlay -->
+        <div class="login-overlay">
+          <div class="login-panel">
+
+            <!-- Panel titlebar -->
+            <div class="panel-titlebar">
+              <i class="fas fa-shield-alt"></i>
+              <span>Authentication Required</span>
+              <span class="close-panel"><i class="fas fa-times"></i></span>
+            </div>
+
+            <!-- Panel body -->
+            <div class="panel-body">
+
+              <!-- Breadcrumb -->
+              <div class="breadcrumb">
+                <span class="crumb">SSSIHL</span>
+                <i class="fas fa-chevron-right"></i>
+                <span class="crumb">LaTeX Editor</span>
+                <i class="fas fa-chevron-right"></i>
+                <span class="crumb active">login.html</span>
+              </div>
+
+              <div class="login-title">Welcome back</div>
+              <div class="login-subtitle">Sign in to continue to your workspace</div>
+
+              <!-- Error message -->
+              <div class="error-msg hidden" id="error-msg">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="error-text">Invalid credentials. Please try again.</span>
+              </div>
+
+              <!-- Form → POST to Java Servlet -->
+              <form id="login-form" action="LoginServlet" method="POST">
+
+                <div class="field">
+                  <label for="username">Username</label>
+                  <div class="input-wrap">
+                    <i class="fas fa-user"></i>
+                    <input
+                      type="text"
+                      id="username"
+                      name="username"
+                      placeholder="your.name@sssihl.edu.in"
+                      autocomplete="username"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="password">Password</label>
+                  <div class="input-wrap">
+                    <i class="fas fa-key"></i>
+                    <input
+                      type="password"
+                      id="password"
+                      name="password"
+                      placeholder="••••••••"
+                      autocomplete="current-password"
+                      required
+                    />
+                    <i class="fas fa-eye toggle-pass" id="toggle-pass" title="Toggle password"></i>
+                  </div>
+                </div>
+
+                <div class="options-row">
+                  <label class="remember-wrap">
+                    <input type="checkbox" name="remember" id="remember"/>
+                    <span>Remember me</span>
+                  </label>
+                  <a class="forgot-link" href="ForgotPasswordServlet">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-login" id="login-btn">
+                  <span class="btn-text"><i class="fas fa-sign-in-alt"></i>&nbsp; Sign In</span>
+                  <div class="spinner"></div>
+                </button>
+
+              </form>
+
+              <div class="divider">or</div>
+
+              <div class="register-row">
+                Don't have an account? <a href="RegisterServlet">Create one</a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <!-- /Login Overlay -->
+
+      </div>
+      <!-- /Editor Content -->
+    </div>
+    <!-- /Editor Area -->
+  </div>
+  <!-- /Workspace -->
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="status-item"><i class="fas fa-code-branch"></i> main</span>
+    <span class="status-item"><i class="fas fa-sync-alt"></i> 0</span>
+    <span class="status-item"><i class="fas fa-exclamation-triangle"></i> 0 &nbsp;<i class="fas fa-times-circle"></i> 0</span>
+    <div class="status-right">
+      <span class="status-item">Ln 1, Col 1</span>
+      <span class="status-item">UTF-8</span>
+      <span class="status-item">HTML</span>
+      <span class="status-item"><i class="fas fa-bell"></i></span>
+    </div>
+  </div>
+
+  <script>
+    // ── Decorative code background ──
+    const codeLines = [
+      '<span class="cm">// LoginServlet.java — SSSIHL LaTeX Editor</span>',
+      '<span class="kw">@WebServlet</span>(<span class="str">"/LoginServlet"</span>)',
+      '<span class="kw">public class</span> <span class="ty">LoginServlet</span> <span class="kw">extends</span> <span class="ty">HttpServlet</span> {',
+      '  <span class="kw">private</span> <span class="ty">UserDAO</span> <span class="pn">dao</span> = <span class="kw">new</span> <span class="ty">UserDAO</span>();',
+      '',
+      '  <span class="kw">protected void</span> <span class="pl">doPost</span>(<span class="ty">HttpServletRequest</span> req,',
+      '      <span class="ty">HttpServletResponse</span> res) <span class="kw">throws</span> <span class="ty">ServletException</span> {',
+      '',
+      '    <span class="ty">String</span> <span class="pn">user</span> = req.<span class="pl">getParameter</span>(<span class="str">"username"</span>);',
+      '    <span class="ty">String</span> <span class="pn">pass</span> = req.<span class="pl">getParameter</span>(<span class="str">"password"</span>);',
+      '',
+      '    <span class="kw">if</span> (dao.<span class="pl">validateUser</span>(user, pass)) {',
+      '      <span class="ty">HttpSession</span> <span class="pn">session</span> = req.<span class="pl">getSession</span>();',
+      '      session.<span class="pl">setAttribute</span>(<span class="str">"username"</span>, user);',
+      '      res.<span class="pl">sendRedirect</span>(<span class="str">"home.html"</span>);',
+      '    } <span class="kw">else</span> {',
+      '      req.<span class="pl">setAttribute</span>(<span class="str">"error"</span>, <span class="str">"Invalid credentials"</span>);',
+      '      req.<span class="pl">getRequestDispatcher</span>(<span class="str">"login.html"</span>)',
+      '         .<span class="pl">forward</span>(req, res);',
+      '    }',
+      '  }',
+      '}',
+      '',
+      '<span class="cm">// UserDAO.java</span>',
+      '<span class="kw">public class</span> <span class="ty">UserDAO</span> {',
+      '  <span class="kw">public boolean</span> <span class="pl">validateUser</span>(<span class="ty">String</span> u, <span class="ty">String</span> p) {',
+      '    <span class="cm">// DB lookup + BCrypt hash check</span>',
+      '    <span class="ty">String</span> <span class="pn">hash</span> = <span class="pl">getHashFromDB</span>(u);',
+      '    <span class="kw">return</span> <span class="ty">BCrypt</span>.<span class="pl">checkpw</span>(p, hash);',
+      '  }',
+      '}',
+    ];
+
+    const codeBg = document.getElementById('code-bg');
+    const gutter = document.getElementById('gutter');
+
+    codeLines.forEach((line, i) => {
+      const span = document.createElement('span');
+      span.className = 'code-line';
+      span.innerHTML = line || '&nbsp;';
+      span.style.animationDelay = (i * 18) + 'ms';
+      codeBg.appendChild(span);
+
+      const ln = document.createElement('span');
+      ln.textContent = i + 1;
+      if (i === 0) ln.classList.add('active-line');
+      gutter.appendChild(ln);
+    });
+
+    // ── Password toggle ──
+    const passInput = document.getElementById('password');
+    const toggleBtn = document.getElementById('toggle-pass');
+    toggleBtn.addEventListener('click', () => {
+      const isPass = passInput.type === 'password';
+      passInput.type = isPass ? 'text' : 'password';
+      toggleBtn.classList.toggle('fa-eye', !isPass);
+      toggleBtn.classList.toggle('fa-eye-slash', isPass);
+    });
+
+    // ── Form submit with loading state ──
+    const form = document.getElementById('login-form');
+    const loginBtn = document.getElementById('login-btn');
+    const errorMsg = document.getElementById('error-msg');
+    const errorText = document.getElementById('error-text');
+
+    form.addEventListener('submit', (e) => {
+      errorMsg.classList.add('hidden');
+      loginBtn.classList.add('loading');
+      loginBtn.disabled = true;
+      // Form will POST to LoginServlet; re-enable on error via JSP/servlet error param
+    });
+
+    // ── Show error if servlet returned ?error=1 ──
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('error')) {
+      errorMsg.classList.remove('hidden');
+      if (params.get('error') === 'invalid') {
+        errorText.textContent = 'Invalid username or password. Please try again.';
+      } else if (params.get('error') === 'session') {
+        errorText.textContent = 'Session expired. Please sign in again.';
+      }
+    }
+
+    // ── Tree item clicks ──
+    document.querySelectorAll('.tree-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.tree-item').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // ── Tab clicks ──
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', function(e) {
+        if (e.target.closest('.close')) return;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>
